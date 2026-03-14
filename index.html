@@ -177,6 +177,7 @@
     transition: opacity 0.2s, transform 0.2s;
   }
 
+  .upload-btn { cursor: pointer; border: none; outline: none; }
   .upload-btn:hover { opacity: 0.85; transform: scale(0.98); }
 
   #fileInput { display: none; }
@@ -437,10 +438,10 @@
 
   <div class="upload-zone" id="dropZone">
     <span class="upload-icon">📂</span>
-    <div class="upload-label">Drop your .txt file here</div>
-    <div class="upload-hint">or tap the button below to browse</div>
-    <button class="upload-btn" id="uploadBtn" type="button">Choose File</button>
-    <input type="file" id="fileInput" accept=".txt" />
+    <div class="upload-label">Tap anywhere here to choose file</div>
+    <div class="upload-hint">supports .txt files</div>
+    <button class="upload-btn" id="uploadBtn" type="button">CHOOSE FILE</button>
+    <input type="file" id="fileInput" accept=".txt" style="display:none;" />
   </div>
 
   <div id="statsBar" style="display:none" class="stats-bar">
@@ -475,11 +476,17 @@
     if (file && file.name.endsWith('.txt')) loadFile(file);
   });
 
-  // Button directly triggers file input — works on mobile too
-  document.getElementById('uploadBtn').addEventListener('click', e => {
+  // Use touchend + click for Android reliability
+  const uploadBtn = document.getElementById('uploadBtn');
+
+  function openFilePicker(e) {
+    e.preventDefault();
     e.stopPropagation();
     fileInput.click();
-  });
+  }
+
+  uploadBtn.addEventListener('click', openFilePicker);
+  uploadBtn.addEventListener('touchend', openFilePicker);
 
   fileInput.addEventListener('change', e => {
     if (e.target.files[0]) loadFile(e.target.files[0]);
